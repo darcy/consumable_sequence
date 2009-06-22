@@ -1,0 +1,37 @@
+ConsumableSequence
+==================
+
+Given an optional scope, will return a sequence number that is guaranteed to be unique and consumable. Useful for (among other things) when you need to generate an ID or part of an ID without using auto_increment (before record is created for example) - things like custom order numbers, etc
+
+
+Example
+=======
+
+ConsumableSequence.get # => 1
+ConsumableSequence.get # => 2
+ConsumableSequence.get('Order') #=> 1
+
+
+Instructions
+============
+
+-- migration
+
+def self.up
+  create_table :consumable_sequences do |t|
+    t.string scope, :unique => true, :null => false
+    t.integer sequence, :null => false
+  end
+  add_index "consumable_sequences", ["scope"], :name => "index_consumable_sequences_on_scope", :unique => true
+  
+  # optional
+  # ConsumableSequence.offset('my_key',409)
+end
+
+def self.down
+  remove_index "consumable_sequences", :name => "index_consumable_sequences_on_scope"
+  drop_table :consumable_sequences
+end
+
+
+Copyright (c) 2009 Darcy, released under the MIT license
